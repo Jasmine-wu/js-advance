@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="app">
+      <h1 v-text="name"></h1>
+      <h1 v-text="age"></h1>
+      <h1 v-text="inputText"></h1>
+
+      <input type="text" v-model="inputText" />
+    </div>
+
+    <script>
+      let data = {
+        name: "myName",
+        age: 19,
+        inputText: "defaultinputText",
+      };
+
+      // 1.定义响应式数据
+      defineReactiveData();
+      // 2.查找v-model等自定义属性
+      //  2.1 更新data
+      //  2.2 在监听事件中更新了响应数据以后，要set的地方重新编译一下
+      //     2.21 存在的问题：每次不管哪一个值更新，所有数据都要重新到视图上
+      //     2.22 优化：如果精确更新，即更新哪个值（name,age）就只更新这一个值而不是所有的都更新
+      compile();
+
+      // 1.定义响应式数据
+      function defineReactiveData() {
+        Object.keys(data).forEach((key) => {
+          defineReactive(data, key, data[key]);
+        });
+      }
+
+      function defineReactive(data, propertyName, value) {
+        Object.defineProperty(data, propertyName, {
+          set(newValue) {
+            value = newValue;
+            //每次视图变化更新了数据以后要重新compile一下
+            compile();
+          },
+          get() {
+            return value;
+          },
+        });
+      }
+
+      // 2.查找所有v-text, 设置属性值
+      function compile() {
+        const nodes = document.querySelector("#app").childNodes;
+        nodes.forEach((node) => {
+          if (node.nodeType == 1) {
+            const attrs = node.attributes;
+            //伪数组转换成真数组
+            Array.from(attrs).forEach((attr) => {
+              const attrName = attr.nodeName;
+              const attrValue = attr.nodeValue;
+              if (attrName == "v-text") {
+                // 数据变化反映到视图上
+                node.innerText = data[attrValue];
+              }
+
+              if (attrName == "v-model") {
+                // 默认值
+                node.value = data[attrValue];
+                // 视图变化反映到数据里
+                node.addEventListener("input", (e) => {
+                  let inputTxt = e.target.value.trim();
+                  data[attrValue] = inputTxt;
+                });
+              }
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

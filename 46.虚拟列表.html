@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      /* 必须要设置html body的宽高 */
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      .box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: aqua;
+      }
+
+      .header {
+        width: 100%;
+        height: 10%;
+        background-color: red;
+      }
+      .footer {
+        width: 100%;
+        height: 10%;
+        background-color: red;
+      }
+      /* 滚动容器是自适应的固定高 */
+      .scroll-container {
+        flex: 1;
+        overflow-y: scroll;
+        width: 100%;
+        border: 2px solid purple;
+      }
+      /* 设置内容容器的最小高度跟滚动容器一样高 */
+      .scroll-content {
+        min-height: 100%;
+      }
+
+      ul {
+        display: flex;
+        flex-direction: column;
+      }
+
+      li {
+        background-color: antiquewhite;
+        border: 2px solid yellow;
+      }
+      .load-more {
+        height: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 实现上下固定，中间内容高度自适应布局 -->
+    <!-- 注意：自适应布局失败的可能原因可能没有设置body,html的宽高 -->
+    <div class="box">
+      <div class="header"></div>
+      <!-- 且中间内容是滚动容器 -->
+      <div class="scroll-container">
+        <div class="scroll-content">
+          <ul class="scroll-list"></ul>
+          <div class="load-more"><span>加载更多数据～</span></div>
+        </div>
+      </div>
+      <div class="footer"></div>
+    </div>
+  </body>
+  <script>
+    let scrollContainner = document.querySelector(".scroll-container");
+    let scrollList = document.querySelector(".scroll-list");
+    let loadMore = document.querySelector(".load-more");
+    // 一页加载10条数据
+    const count = 10;
+    // 总共多少页数据
+    const pages = 10;
+    // 当前是第几页
+    let page = 1;
+    // 是否还有更多数据
+    let isFinish = false;
+
+    // 1. 模拟加载数组
+    const loadData = function () {
+      for (let index = 0; index < count; index++) {
+        let li = document.createElement("li");
+        li.innerHTML = `${page}` + index;
+        // 1.1 根据滚动容器的高/一页显示多少条动态设置单元格的高度
+        li.style.height = scrollContainner.clientHeight / count + "px";
+        scrollList.appendChild(li);
+      }
+
+      // page自增
+      page++;
+    };
+    loadData();
+
+    // 基础概念：
+    // 1. 盒子模型默认是context-box； 即设置的width只是contentWidth，而元素真实的外部尺寸的高度还要加上padding+ border
+    //     box-sizing:border-box: 设置width =就等于元素真实外部尺寸的width = contentWidth+ padding + border
+    // 2. clinetWidth = contentWidth + padding
+    // 3. offsetWidth = contentWidth + padding + border
+    // 4. offsetTop : 元素顶部（上边框外部）距离offsetParenet（最近的设置了position的元素）元素顶部的距离
+    // 5. scrollHeight: 滚动元素内容的高度
+    // 6. scrollTop： 往上卷了多少距离
+    // 7. 元素的外部尺寸高度应该是:contentWidth + padding + border 也就是 offsetWidth
+
+    // 1. 滚动容器数据懒加载实现思路
+    // 布局：滚动容器父元素，必须要设置宽高。且滚动容器必须要设置一个固定的height。
+    // 1.1 根据滚动容器的高度，动态设置单元格li的高度。注意要有px单位，不然会设置失败
+    // 1.2 监听滚动容器的滚动事件, 如果滑动到底部，则加载更多数据
+
+    // 1.2 监听滚动容器滚动事件
+    scrollContainner.addEventListener("scroll", () => {
+      // 如果滚动到底部
+      if (
+        scrollContainner.scrollTop + scrollContainner.clientHeight >=
+          scrollContainner.scrollHeight &&
+        !isFinish
+      ) {
+        if (page < pages) {
+          loadData();
+          isFinish = false;
+          loadMore.innerHTML = "加载更多数据";
+        } else {
+          isFinish = true;
+          loadMore.innerHTML = "没有更多数据了";
+        }
+      }
+    });
+  </script>
+</html>

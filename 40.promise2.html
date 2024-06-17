@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>dddddd</div>
+    <script>
+      // 1. 先实现实例方法
+      const MyPromise = (resovle, reject) => {
+        //
+      };
+
+      // 2. 实现.then .catch方法
+      const p1 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve("1000");
+        }, 1000);
+      });
+      p1.then(
+        (res) => console.log(res),
+        (error) => console.log("error")
+      );
+
+      console.log("111dddddddddddddddsssdddddddddddddddddddddd");
+    </script>
+  </body>
+</html>
