@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">获取用户信息</button>
+    <script>
+      // 1:
+      // var userInfo = {
+      //   data: [
+      //     { userName: "zhangsan", age: 20 },
+      //     { userName: "lisi", age: 21 },
+      //   ],
+      //   getUserInfo: function () {
+      //     var index = 1;
+      //     console.log(this.data[index].userName + " " + this.data[index].age);
+      //   },
+      // };
+      // var btn = document.getElementById("btn");
+      // // btn.onclick = userInfo.getUserInfo;
+      // btn.onclick = userInfo.getUserInfo.bind(userInfo);
+
+      // 2:
+
+      // var userInfo = {
+      //   data: [
+      //     { userName: "zhangsan", age: 20 },
+      //     { userName: "lisi", age: 21 },
+      //   ],
+      //   getUserInfo: function () {
+      //     console.log(this); // this指向userInfo
+
+      //     this.data.forEach(function (p) {
+      //       // 这是forEach回调函数，这里并没有指定this绑定，因此非严格模式下默认指向window
+      //       console.log(this); // 指向window
+      //     });
+      //   },
+      // };
+      // var btn = document.getElementById("btn");
+      // btn.onclick = userInfo.getUserInfo.bind(userInfo);
+
+      // 需求：让上面案例的this指向userInfo怎么做？
+      // 方法1:保存this
+      // var userInfo = {
+      //   data: [
+      //     { userName: "zhangsan", age: 20 },
+      //     { userName: "lisi", age: 21 },
+      //   ],
+      //   getUserInfo: function () {
+      //     const that = this;
+
+      //     this.data.forEach(function (p) {
+      //       console.log(that);
+      //     });
+      //   },
+      // };
+      // var btn = document.getElementById("btn");
+      // btn.onclick = userInfo.getUserInfo.bind(userInfo);
+
+      // 方法二：箭头函数
+      var userInfo = {
+        data: [
+          { userName: "zhangsan", age: 20 },
+          { userName: "lisi", age: 21 },
+        ],
+        getUserInfo: function () {
+          this.data.forEach((p) => {
+            console.log(this);
+          });
+        },
+      };
+      var btn = document.getElementById("btn");
+      btn.onclick = userInfo.getUserInfo.bind(userInfo);
+    </script>
+  </body>
+</html>

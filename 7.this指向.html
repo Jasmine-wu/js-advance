@@ -8,26 +8,81 @@
   </head>
   <body>
     <script>
+      // this指向的都是被调用者
+      // 浏览器环境下非严格模式下：如果是全局作用下的this，则指向的是window，非全局作用域下this指向的是调用
+      // 浏览器环境下严格模式下：如果是全局作用下的this，则指向的是undefined
 
-      // 导致内存泄漏的情况
-      function outer() {
-        let element = document.querySelector("#a");
-        function requestData() {
-          element.addEventListener("click", () => {
-            console.log("click");
-          });
-        }
-      }
+      // function Person(userName) {
+      //   this.userName = userName;
+      // }
+      // Person("lisi");
+      // console.log(window.userName);
 
-      function removeEle() {
-        document.querySelector("#a").parentNode.removeChild();
-      }
+      // 2:
+      // function fn() {
+      //   console.log(this);
+      // }
+      // let obj = {
+      //   fn: fn,
+      // };
+      // fn(); // window
+      // obj.fn(); //obj
 
-      outer();
-      removeEle()
+      // 3:
+      // var fullName = "language";
+      // var obj = {
+      //   fullName: "javascript",
+      //   prop: {
+      //     getFullName: function () {
+      //       console.log("this:", this);
+      //       return this.fullName;
+      //     },
+      //   },
+      // };
+      // // 这里的this指向 obj.prop,prop对象并没有fullName
+      // console.log(obj.prop.getFullName()); // undefined
+      // var test = obj.prop.getFullName; // language
+      // console.log(test()); // 直接调用指向widow/undefined
 
-      // 解决：
+      // 4: ❤️
 
+      // var num = 10;
+      // var obj = { num: 20 };
+
+      // obj.fn = (function (num) {
+      //   // console.log("this:", this);
+      //   this.num = num * 3; // 全局对象的 num 变成 60
+      //   num++; // num 变成 21
+
+      //   return function (n) {
+      //     this.num += n; // 修改全局对象的 num 属性值 65
+      //     // console.log("num2", num); // 输出 21
+      //     // console.log("this:", this);
+      //     num++; // 闭包中的 num 值增加为 22
+      //     console.log(num); // 输出 22
+      //   };
+      // })(obj.num);
+
+      // var fn = obj.fn;
+      // fn(5); // 输出 22, 这里this指向window
+      // obj.fn(10); // 输出 23 ，这里this指向obj
+
+      // console.log(num, obj.num); // 65，30
+
+      // 5.
+      var value = 10;
+      var obj = {
+        value: 20,
+      };
+      // 全局函数
+      var method = function () {
+        console.log(this.value);
+      };
+      method(); // 10
+      method.call(obj); // 20
+      method.apply(obj); // 20
+      var newMethod = method.bind(obj);
+      newMethod(); // 20
     </script>
   </body>
 </html>
