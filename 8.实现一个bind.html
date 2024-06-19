@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // fn.myCall(context,arg1,arg2)
+      // 作用：
+      // 1. 改变fn函数内部this指向为context
+      // 2. 执行fn,并传入参数
+
+      Function.prototype.myCall = function (context, ...args) {
+        if (typeof this != "function") {
+          throw new TypeError("this must be a function");
+        }
+        const fn = Symbol("__myFn__");
+        context[fn] = this;
+        const reuslt = context[fn](...args);
+        return reuslt;
+      };
+
+      const obj = {
+        name: "章三",
+      };
+      // 不能使用箭头函数, 箭头函数内部是没有this的
+      const sum = function (a, b) {
+        console.log(a + b);
+        console.log(this);
+      };
+      // sum.call(obj, 1, 2);
+      // sum.myCall(obj, 1, 2);
+
+      // 实现 myBind
+      // const newFn = fn.myBind(context,arg1,arg2)
+      // 作用：
+      // 1. 传入预设参数，返回新函数
+      // 2. 新函数可传入参数，要合并到预设参数后面。新函数执行时，才执行fn，改变fn内this指向。
+      // 3. 新函数支持new操作符， 返回fn函数的实例
+      Function.prototype.myBind = function (content, ...args) {
+        if (typeof this != "function") {
+          throw new TypeError("this must be a function");
+        }
+        // 保留fn
+        const that = this;
+        const newFn = function (...args2) {
+          // 问题；如何判断函数是普通函数调用，还new 构造函数调用呢？
+          // 判断this是否是构造函数实例
+          if (this instanceof newFn) {
+            // 返回fn实例
+            const fnInstance = new that(...args2);
+            return fnInstance;
+          }
+          return that.call(content || window, ...args, ...args2);
+        };
+
+        // 注意：这里new newFn返回的是fn实例，因此这里我们需要修正constructor也指向fn
+        newFn.prototype = Object.create(that.prototype);
+        newFn.prototype.constructor = newFn;
+        return newFn;
+      };
+
+      Function.prototype.myAppy = function (context) {
+        if (typeof this !== "function") {
+          throw new TypeError("context must be a function");
+        }
+
+        const fn = Symbol("__myFn__");
+        context = context || window;
+        context[fn] = this;
+        return context[fn](...arguments(1));
+      };
+
+      sum.myAppy(obj, [1, 2]);
+    </script>
+  </body>
+</html>
