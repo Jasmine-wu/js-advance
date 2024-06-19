@@ -62,6 +62,12 @@
         return newFn;
       };
 
+      const newFn = sum.myBind(obj, 1);
+      console.log(newFn.prototype);
+      // newFn(2);
+      new newFn(2);
+      console.log(newFn.prototype);
+
       Function.prototype.myAppy = function (context) {
         if (typeof this !== "function") {
           throw new TypeError("context must be a function");

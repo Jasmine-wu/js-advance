@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // function Person() {}
+      // console.log(Person.prototype.constructor); // Person
+      // Person.prototype = {
+      //   userName: "zhangsan",
+      //   age: 20,
+      //   sayHi: function () {
+      //     console.log(this.userName);
+      //   },
+      // };
+
+      // var person = new Person();
+      // person.sayHi();
+      // console.log(Person.prototype.constructor); // Object
+
+      // 分析：原型对象被整个替换以后，Person.prototype.constructor指向了Object而不是Person
+      // 解决：
+      function Person() {}
+      console.log(Person.prototype.constructor); // Person
+      Person.prototype = {
+        userName: "zhangsan",
+        age: 20,
+        sayHi: function () {
+          console.log(this.userName);
+        },
+      };
+      // 修复原型对象
+      Person.prototype.constructor = Person;
+
+      var person = new Person();
+      person.sayHi();
+      console.log(Person.prototype.constructor); // Object
+    </script>
+  </body>
+</html>

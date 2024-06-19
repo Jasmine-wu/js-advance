@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function Fn(name) {
+        this.name = name;
+      }
+      const instance = new Fn("zhangsan");
+      console.log(Fn.prototype);
+      console.log(instance.__proto__);
+      // 几个名词：
+      // 1.原型对象prototype： 构造函数上的属性
+      // 2.实例的原型__proto__: 实例的属性
+      // 实例的原型__proto__指向的是构造函数的原型对象prototype
+
+      // 3.constructor: 原型对象prototype上的属性
+      // 构造函数的原型对象prototype的constructor指向的构造函数本身
+
+      // 原型链是什么:
+      // 第一次查找
+      console.log(instance.__proto__ === Fn.prototype);
+      // 第二次沿着原型连查找
+      console.log(instance.__proto__.__proto__ === Fn.prototype.__proto__);
+      console.log(Fn.prototype.__proto__.constructor); //object
+      // 构造函数原型对象的原型指向的是父构造函数的原型对象
+      console.log(Fn.prototype.__proto__ === Object.prototype);
+      // 第三次查找
+      console.log(
+        Fn.prototype.__proto__.__proto__ === Object.prototype.__proto__
+      );
+      // null
+      console.log(Object.prototype.__proto__);
+
+      // 问题：实例和构造函数是如何关联起来的？
+      // 1. 实例的原型__proto__可以访问构造函数的原型对象prototype
+      // 2. 构造函数的原型对象prototype的constructor可以访问到构造函数本身
+    </script>
+  </body>
+</html>

@@ -1579,7 +1579,7 @@ function hasPrototypeProperty(object, name){
 
 #### 基本使用
 
-该函数的主要作用是创建拥有指定原型以及指定属性新对象。
+该函数的主要作用是创建新对象，该对象拥有指定原型以及指定属性。
 
 从这个方法可以看出：对象有原型（原型属性和方法）+属性（实例属性和方法）
 
@@ -5089,7 +5089,7 @@ JSON.parse(JSON.stringify());
 
 如下图所示
 
-![](E:/D/博学谷/JavaScript面试精讲/讲义/images/原型对象重写.png)
+![](images/原型对象重写.png)
 
 而我们可以看到在字面量对象中有一个`__proto__`属性，指向了`Object`的原型对象,这时，只能去`Object`原型对象中查找是否有`constructor`属性，而`Object`原型对象中的`constructor`指向的还是`Object`.所以最终输出结果为`Object`.
 
@@ -5174,7 +5174,7 @@ function Person() {}
 
 下面，可以通过一张图来理解一下：
 
-![](E:/D/博学谷/JavaScript面试精讲/讲义/images/原型继承1.png)
+![](images/原型继承1.png)
 
 原来的构造函数`Dog`的`prototype`指向的是`Dog`的原型对象，但是现在指向了`Animal`的实例对象。也就是说构造函数`Dog`的原型对象为`Animal`的实例对象。
 

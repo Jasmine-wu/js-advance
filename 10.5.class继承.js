@@ -3,7 +3,7 @@
 // 原型属性和方法
 // 私有属性和方法
 // 静态静态
-// 继承： extendsi继承, super()子类调用父类的构造函数
+// 继承： 关键字extends, super()子类调用父类的构造函数
 
 // 1. 通过super关键字可以直接调用父类的构造函数和方法，而在寄生组合继承中，需要手动通过call或apply来调用父类构造函数。
 // 2. class自动处理了原型链的继承关系，无需手动设置prototype
@@ -34,14 +34,23 @@ class Person {
     console.log("这是一个静态方法");
     console.log(this);
   }
-  static info = "直立行走，双手双脚";
 }
 
-const p = new Person("jack");
-console.log(p);
-// 外部无法访问 点语法访问直接报错，通过[]无法动态获取
-console.log(p["#secret"]);
-p.info();
-// 通过类访问静态属性/方法
-Person.staticMethod();
-console.log(Person.info);
+// const p = new Person("jack");
+// console.log(p);
+// // 外部无法访问 点语法访问直接报错，通过[]无法动态获取
+// console.log(p["#secret"]);
+// p.info();
+// // 通过类访问静态属性/方法
+// Person.staticMethod();
+// console.log(Person.info);
+
+// class继承
+class Student extends Person {
+  constructor(name) {
+    super(name);
+  }
+}
+
+const stu1 = new Student("hshsh");
+console.log(stu1.name);
