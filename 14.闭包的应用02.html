@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // var arr = ["a", "b", "c"];
+      // for (var i = 0; i < arr.length; i++) {
+      //   setTimeout(function () {
+      //     console.log(arr[i]); // undefined
+      //   }, 1000);
+      // }
+
+      // 解决：
+      var arr = ["a", "b", "c"];
+      for (var i = 0; i < arr.length; i++) {
+        (function (i) {
+          setTimeout(function () {
+            console.log(arr[i]);
+          }, 1000);
+        })(i);
+      }
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
 // vue2.0插件写法要素：导出一个对象，有install函数，默认传入了Vue构造函数，Vue基础之上扩展
 // vue3.0插件写法要素：导出一个对象，有install函数，默认传入了app应用实例，app基础之上扩展
 
-import defaultImg from "@/assets/images/200.png";
+// import defaultImg from "@/assets/images/200.png";
 
 // 使用 `require` 提供的函数 `context`  加载某一个目录下的所有 `.vue` 后缀的文件。
 // 然后 `context` 函数会返回一个导入函数 `importFn`
@@ -11,8 +11,8 @@ import defaultImg from "@/assets/images/200.png";
 // 通过文件路径数组，通过遍历数组，再使用 `importFn`  根据路径导入组件对象
 // 遍历的同时进行全局注册即可
 
-import Message from "./Message";
-import Confirm from "./Confirm";
+// import Message from "./Message";
+// import Confirm from "./Confirm";
 
 // context(目录路径，是否加载子目录，加载文件的匹配正则)
 const importFn = require.context("./", false, /\.vue$/);
@@ -35,8 +35,8 @@ export default {
     defineDirective(app);
 
     // 定义一个原型函数
-    app.config.globalProperties.$message = Message;
-    app.config.globalProperties.$confirm = Confirm;
+    // app.config.globalProperties.$message = Message;
+    // app.config.globalProperties.$confirm = Confirm;
   },
 };
 

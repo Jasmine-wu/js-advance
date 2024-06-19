@@ -1,5 +1,4 @@
 // 组合继承：原型继承+借用构造函数继承
-
 function Person(age) {
   this.emotion = ["吃饭", "睡觉", "学习"]; // 爱好
   this.age = age;

@@ -1,5 +1,4 @@
 // js中Object.assign(target, source)对象合并也是浅拷贝实现的
-
 // Object.assign(target, source)：合并两个对象，将source合并到target，并返回target
 Object.myAssign = function (target, src) {
   // 1. 如果第一参数为null或者undefined已经不是对象类型则抛错

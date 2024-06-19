@@ -21,6 +21,7 @@
 class SingleInstance {
   // 定义一个私有的静态变量，这样的这个静态变量不会被外部访问到
   static #instance = null;
+  
   constructor(name) {
     if (!SingleInstance.#instance) {
       this.name = name;

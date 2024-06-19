@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <ul>
+      <li>a</li>
+      <li>b</li>
+      <li>c</li>
+      <li>d</li>
+      <li>e</li>
+    </ul>
+    <script>
+      // 打印结果index全是5怎么办？
+      // const liArr = document.getElementsByTagName("ul")[0].children;
+      // for (var index = 0; index < liArr.length; index++) {
+      //   liArr[index].onclick = function () {
+      //     console.log("index: ", index);
+      //   };
+      // }
+      // console.log(liArr);
+
+      // 解决：没有let const之前, 用立即执行函数创建函数作用域
+      // (function(index){})(index)
+
+      const liArr = document.getElementsByTagName("ul")[0].children;
+      for (var index = 0; index < liArr.length; index++) {
+        (function (index) {
+          liArr[index].onclick = function () {
+            console.log("index: ", index);
+          };
+        })(index);
+      }
+      // console.log(liArr);
+    </script>
+  </body>
+</html>

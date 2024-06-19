@@ -1,5 +1,4 @@
 // 浅拷贝: 对于基本数据类型是值拷贝，引用类型拷贝的是内存地址。
-
 var obj = { a: 1, arr: [2, 3], o: { name: "zhangsan" } };
 
 const shallowCopy = function (src) {

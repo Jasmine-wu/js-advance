@@ -1,7 +1,6 @@
 // fn.bind(context,arg1,arg2):
 // 1. 返回一个新函数，当调用新函数时，会实现执行fn并将fn内部的this指向context
 // 2. 返回的新函数支持new，并支持传入参数。new操作返回fn函数实例。
-
 Function.prototype.myCall = function (context, ...args) {
   if (typeof this != "function") {
     throw new TypeError("this must be a function");

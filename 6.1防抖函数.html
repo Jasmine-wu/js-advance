@@ -1,24 +1,41 @@
-const input = document.querySelector("#input");
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <input id="input" type="text" />
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+    <script>
+      const input = document.querySelector("#input");
 
-// 传入fn, 延迟时间
-// 返回一个防抖函数，支持传入的fn的参数
-// 操作结束后再调用
-// 如果规定时间内触发了，则重启定时器
-function debounce(fn, delay = 500) {
-  let timer = null;
-  return function () {
-    const context = this;
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      fn.apply(context);
-    }, delay);
-  };
-}
-function update() {
-  console.log("输入中：xxx", input.value);
-}
+      // 传入fn, 延迟时间
+      // 返回一个防抖函数，支持传入的fn的参数
+      // 操作结束后再调用
+      // 如果规定时间内触发了，则重启定时器
+      function debounce(fn, delay = 500) {
+        let timer = null;
+        return function () {
+          const context = this;
+          if (timer) {
+            clearTimeout(timer);
+          }
+          timer = setTimeout(() => {
+            fn.apply(context);
+          }, delay);
+        };
+      }
+      function update() {
+        console.log("输入中：xxx", input.value);
+      }
 
-const debounceFn = debounce(update, 2000);
-input.addEventListener("input", debounce(update, 2000));
+      const debounceFn = debounce(update, 2000);
+      input.addEventListener("input", debounce(update, 2000));
+    </script>
+  </body>
+</html>

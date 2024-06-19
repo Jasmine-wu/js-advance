@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 浏览器环境非严格模式下，全局作用域的this指向window
+      // 浏览器环境严格模式下：全局作用域的this指向undefined
+
+      // "use strict";
+      // var userName = "zhangsan";
+      // var person = {
+      //   userName: "lisi",
+      //   method: function () {
+      //     return function () {
+      //       // 非严格模式下：this指向winoow
+      //       // 严格模式下：全局作用域下的this指向undefined，防止全局变量污染
+      //       console.log("this", this);
+      //       return this.userName;
+      //     };
+      //   },
+      // };
+      // // 直接调用
+      // console.log(person.method()());
+
+      // 需求：不论什么模式下，都让this都指向lisi
+      // 解决方法一：保存this
+      // "use strict";
+      // var userName = "zhangsan";
+      // var person = {
+      //   userName: "lisi",
+      //   method: function () {
+      //     const that = this;
+      //     return function () {
+      //       // this: person
+      //       console.log("this", that);
+      //       return that.userName;
+      //     };
+      //   },
+      // };
+      // // 直接调用
+      // console.log(person.method()());
+
+      // 解决方法2: 用箭头函数
+      "use strict";
+      var userName = "zhangsan";
+      var person = {
+        userName: "lisi",
+        method: function () {
+          const that = this;
+          return () => {
+            // this: person
+            console.log("this", this);
+            return this.userName;
+          };
+        },
+      };
+      // 直接调用
+      console.log(person.method()());
+    </script>
+  </body>
+</html>
