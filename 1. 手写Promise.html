@@ -103,14 +103,23 @@
                 };
 
           // 返回Promise，支持链式调用
-          return new Promise((resovle, reject) => {
+          return new MyPromise((resovle, reject) => {
             // 同步操作，直接执行
             if (this.state === FULLFILLED) {
               runAsyncTask(() => {
                 // 处理onFullfilled返回值以及抛出的异常
                 try {
                   const returnValue = onFullfilled(this.result);
-                  resovle(returnValue);
+                  // 如果返回值是MyPromise实例
+                  if (returnValue instanceof MyPromise) {
+                    returnValue.then(
+                      (res) => resovle(res),
+                      (error) => reject(error)
+                    );
+                  } else {
+                    // 如果不是MyPromise实例
+                    resovle(returnValue);
+                  }
                 } catch (error) {
                   reject(error);
                 }
@@ -220,11 +229,34 @@
       // );
       // console.log("3");
 
-      // 测试6， then方法支持链式调用
+      // 测试6: then方法支持链式调用
       // 如何做呢？
       // 1. 返回新的Promise
       // 1.1 处理成功的回调函数onFullfilled方法的返回值，传给下一个then的onFullfilled函数
       // 1.2 处理成功的回调函数onFullfilled方法抛出的异常,传给下一个then的onRejected函数
+      // const p2 = new MyPromise((resolve, reject) => {
+      //   resolve(1);
+      //   // reject(2);
+      // });
+      // p2.then(
+      //   (res) => {
+      //     console.log("p1 res:", res);
+      //     throw "xxxx error";
+      //     return 2;
+      //   },
+      //   (error) => {
+      //     console.log("p1 error:", error);
+      //   }
+      // ).then(
+      //   (res) => {
+      //     console.log("p2 res", res);
+      //   },
+      //   (error) => {
+      //     console.log("p2 error", error);
+      //   }
+      // );
+
+      // 测试6：then方法支持链式调用，onFullfilled方法支持返回Promise
       const p2 = new MyPromise((resolve, reject) => {
         resolve(1);
         // reject(2);
@@ -232,9 +264,9 @@
       p2.then(
         (res) => {
           console.log("p1 res:", res);
-          throw "xxxx error";
-
-          return 2;
+          return new MyPromise((resovle, reject) => {
+            reject(22);
+          });
         },
         (error) => {
           console.log("p1 error:", error);
