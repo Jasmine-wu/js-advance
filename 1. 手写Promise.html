@@ -14,7 +14,7 @@
       // 2.1 当使用者在回调函数内进行异步操作，异步操作成功可以通过调用resolve（）返回成功的结果，并修改状态为pedding =》fullfilled
       // 2.1 当使用者在回调函数内进行异步操作，异步操作失败可以通过调用reject（）返回成功的结果，并修改状态为pedding =》rejected
       // 3. 实例方法：then/catch
-      // 3.1 通过调用.then方法resovle函数返回成功结果
+      // 3.1 通过调用.then方法resovle函数获取同步/异步操作成功/失败的结果
 
       // const p1 = new Promise((resovle, reject) => {
       //   setTimeout(() => {
@@ -39,6 +39,10 @@
         state = PENDDING;
         // 结果
         result = undefined;
+
+        // promise成功/失败的回调函数
+        #onFullfilledCallBacks = [];
+        #onRejectedCallBacks = [];
         // 传入回调函数
         constructor(excutorFn) {
           // 1. 两个内函数(这里是箭头函数)
@@ -49,12 +53,20 @@
             if (this.state === PENDDING) {
               this.state = FULLFILLED;
               this.result = result;
+              // 异步操作：当状态改变时，执行成功的回调函数
+              this.#onFullfilledCallBacks.forEach((onFullfilled) => {
+                onFullfilled(this.result);
+              });
             }
           };
           const reject = (result) => {
             if (this.state === PENDDING) {
               this.state = REJECTED;
               this.result = result;
+              // 异步操作：当状态改变时，执行失败的回调函数
+              this.#onRejectedCallBacks.forEach((onRejected) => {
+                onRejected(this.result);
+              });
             }
           };
 
@@ -65,7 +77,6 @@
         // 2. 实例方法then方法
         // .then((res,error)=>{})
         then(onFullfilled, onRejected) {
-          console.log(this);
           onFullfilled =
             typeof onFullfilled === "function" ? onFullfilled : (x) => x;
           onRejected =
@@ -75,12 +86,17 @@
                   throw x;
                 };
 
-          // 执行
+          // 同步操作，直接执行
           if (this.state === FULLFILLED) {
             onFullfilled(this.result);
           }
           if (this.state === REJECTED) {
             onRejected(this.result);
+          }
+          // 异步操作：先保存成功/失败的回调函数
+          if (this.state === PENDDING) {
+            this.#onFullfilledCallBacks.push(onFullfilled);
+            this.#onRejectedCallBacks.push(onRejected);
           }
         }
       }
@@ -99,11 +115,11 @@
       // });
 
       // 测试2: 实例方法then，
-      const p2 = new MyPromise((resolve, reject) => {
-        // 同步操作
-        resolve(100);
-        // reject("errorxxx");
-      });
+      // const p2 = new MyPromise((resolve, reject) => {
+      //   // 同步操作
+      //   resolve(100);
+      //   // reject("errorxxx");
+      // });
       // 获取同步操作结果，支持接收两个参数
       // p2.then(
       //   (res) => {
@@ -114,12 +130,38 @@
       //   }
       // );
 
-      // 测试： 调用reject，但是then只接收一个参数时。报错：Uncaught errorxxx
-      // 解决：
-      p2.then((res) => {
-        console.log(res);
+      // 测试3： 调用reject，但是then只接收一个参数时。报错：Uncaught errorxxx
+      // p2.then((res) => {
+      //   console.log(res);
+      // });
+
+      // 测试3， then方法支持获取异步操作结果
+      // 需求分析：如果是异步操作，p2.then获取异步操作结果时，resolve(100)还未执行。也就是promise的状态还未改变，这时获取结果是失败的
+      // 解决：then时保存回调函数，等到resolve/reject方法被调用时再执行
+      const p2 = new MyPromise((resolve, reject) => {
+        // 异步操作
+        setTimeout(() => {
+          // resolve(100);
+          reject("errorxxx");
+        }, 1000);
       });
-      console.log("p2:", p2);
+      p2.then(
+        (res) => {
+          console.log(res);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+      p2.then(
+        (res) => {
+          console.log("x", res);
+        },
+        (error) => {
+          console.log("x", error);
+        }
+      );
+      // console.log("p2:", p2);
     </script>
   </body>
 </html>
