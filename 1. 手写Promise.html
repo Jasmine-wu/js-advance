@@ -58,8 +58,11 @@
       // console.log("p1:", p1);
 
       // 状态变量
-      // option + 双击选中三个变量名
+      // 双击选中三个变量名
       // cmd+shift+p 转为大写
+
+      // 双击选中
+      // cmd+d 同步写
       const FULLFILLED = "fullfilled";
       const PENDDING = "pedding";
       const REJECTED = "rejected";
@@ -83,11 +86,9 @@
               this.state = FULLFILLED;
               this.result = result;
               // 异步操作：当状态改变时，执行成功的回调函数
-              this.#onFullfilledCallBacks.forEach((onFullfilled) => {
-                runAsyncTask(() => {
-                  onFullfilled(this.result);
-                });
-              });
+              this.#onFullfilledCallBacks.forEach(({ onFullfilled }) =>
+                onFullfilled()
+              );
             }
           };
           const reject = (result) => {
@@ -95,11 +96,9 @@
               this.state = REJECTED;
               this.result = result;
               // 异步操作：当状态改变时，执行失败的回调函数
-              this.#onRejectedCallBacks.forEach((onRejected) => {
-                runAsyncTask(() => {
-                  onRejected(this.result);
-                });
-              });
+              this.#onRejectedCallBacks.forEach(({ onRejected }) =>
+                onRejected()
+              );
             }
           };
 
@@ -163,8 +162,34 @@
             }
             // 异步操作：先保存成功/失败的回调函数
             if (this.state === PENDDING) {
-              this.#onFullfilledCallBacks.push(onFullfilled);
-              this.#onRejectedCallBacks.push(onRejected);
+              this.#onFullfilledCallBacks.push({
+                onFullfilled: () => {
+                  runAsyncTask(() => {
+                    // 处理抛出的异常
+                    try {
+                      const returnValue = onFullfilled(this.result);
+                      // 处理返回值
+                      handleReturnValue(returnValue, p2, resovle, reject);
+                    } catch (error) {
+                      reject(error);
+                    }
+                  });
+                },
+              });
+              this.#onRejectedCallBacks.push({
+                onRejected: () => {
+                  runAsyncTask(() => {
+                    // 处理抛出的异常
+                    try {
+                      const returnValue = onRejected(this.result);
+                      // 处理返回值
+                      handleReturnValue(returnValue, p2, resovle, reject);
+                    } catch (error) {
+                      reject(error);
+                    }
+                  });
+                },
+              });
             }
           });
 
@@ -352,22 +377,62 @@
       // -- 返回值是Promise对象
       // -- 返回值跟then方法返回值是同一个实例的问题
 
-      const p = new MyPromise((resolve, reject) => {
-        reject(2);
+      // const p = new MyPromise((resolve, reject) => {
+      //   reject(2);
+      // });
+      // const p2 = p.then(
+      //   (res) => {
+      //     console.log("p1 res:", res);
+      //   },
+      //   (error) => {
+      //     // throw "xxxxx";
+      //     return 1;
+      //     // return new MyPromise((resovle, reject) => {
+      //     //   // reject(22);
+      //     //   resovle(11);
+      //     // });
+      //     // return p2;
+      //     // console.log("p1 error:", error);
+      //   }
+      // );
+      // p2.then(
+      //   (res) => {
+      //     console.log("p2 res", res);
+      //   },
+      //   (error) => {
+      //     console.log("p2 error", error);
+      //   }
+      // );
+
+      // 测试9:then方法支持链式调用, 处理获取异步操作结果时,onFullfilled方法和onRejected回调函数抛出的异常和返回值
+      const p = new MyPromise((resovle, reject) => {
+        // 异步操作
+        setTimeout(() => {
+          // resovle(1);
+          reject(1);
+        }, 0);
       });
       const p2 = p.then(
         (res) => {
           console.log("p1 res:", res);
-        },
-        (error) => {
           // throw "xxxxx";
-          return 1;
+          // return 2;
           // return new MyPromise((resovle, reject) => {
           //   // reject(22);
           //   resovle(11);
           // });
           // return p2;
-          // console.log("p1 error:", error);
+        },
+        (error) => {
+          console.log("p1 error:", error);
+
+          // throw "xxxxx";
+          // return 2;
+          // return new MyPromise((resovle, reject) => {
+          //   // reject(22);
+          //   resovle(11);
+          // });
+          return p2;
         }
       );
       p2.then(
