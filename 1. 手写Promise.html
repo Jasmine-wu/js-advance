@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 自定义Promise对象
+      // Promise对象：获取异步操作结果的
+      // 1. 传入一个回调函数，该回调函数接收两个参数(resolve,reject)
+      // 2. Promise对象有三个状态：pedding/ fullfilled / rejected，状态的改变是单向的
+      // 2.1 当使用者在回调函数内进行异步操作，异步操作成功可以通过调用resolve（）返回成功的结果，并修改状态为pedding =》fullfilled
+      // 2.1 当使用者在回调函数内进行异步操作，异步操作失败可以通过调用reject（）返回成功的结果，并修改状态为pedding =》rejected
+      // 3. 实例方法：then/catch
+      // 3.1 通过调用.then方法resovle函数返回成功结果
+
+      const p1 = new Promise((resovle, reject) => {
+        setTimeout(() => {
+          resovle("100");
+        }, 1000);
+      });
+      p1.then((value) => {
+        console.log("success:", value);
+      }).catch((resson) => {
+        console.log("fail:", resson);
+      });
+      console.log("p1:", p1);
+
+      // 状态变量
+      // option + 双击选中三个变量名
+      // cmd+shift+p 转为大写
+      const FULLFILLED = "fullfilled";
+      const PENDDING = "pedding";
+      const REJECTED = "rejected";
+      class MyPromise {
+        // 状态
+        #state = PENDDING;
+        // 结果
+        #result = undefined;
+
+        // 传入回调函数
+        constructor(excutorFn) {
+          // 1. 两个内函数(这里是箭头函数)
+          // 箭头函数内部的this指向箭头函数定义所在上下文的this
+          // 也就是 this指向的Promise 实例
+          const resovle = (result) => {
+            // state是不可逆的
+            if (this.state === PENDDING) {
+              this.state = FULLFILLED;
+              this.result = result;
+            }
+          };
+          const reject = (result) => {
+            if (this.state === PENDDING) {
+              this.state = REJECTED;
+              this.result = result;
+            }
+          };
+
+          // 2.执行回调函数
+          excutorFn(resovle, reject);
+        }
+        //
+      }
+
+      // 测试1: 状态是不可逆的，只能从pedding->resolved 或者peddding->rejected
+      const p2 = new MyPromise((resolve, reject) => {
+        setTimeout(() => {
+          // 测试1: 状态是不可逆的，只能从pedding->resolved 或者peddding->rejected
+          // 不能从 resolved=>rejected rejected=>resolved
+          resolve("100");
+          // reject("1000");
+        }, 1000);
+      });
+      console.log("state:", p2);
+    </script>
+  </body>
+</html>

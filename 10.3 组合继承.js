@@ -1,4 +1,5 @@
-// 组合继承：原型继承+借用构造函数继承
+// 组合继承：原型继承 + 借用构造函数继承
+// 问题：构造函数初始化了两次
 function Person(age) {
   this.emotion = ["吃饭", "睡觉", "学习"]; // 爱好
   this.age = age;
@@ -16,6 +17,7 @@ function Studnet(id, age) {
 }
 // 原型继承：
 Studnet.prototype = new Person();
+// 修复原型对象
 Studnet.prototype.constructor = Studnet;
 
 var stu1 = new Studnet(1001, 21);

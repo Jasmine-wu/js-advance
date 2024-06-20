@@ -1,5 +1,8 @@
 // 原型继承：通过设置一个对象的原型为另一个对象
+// 能继承实例+原型上的属性和方法
 // 原型继承的问题：
+// 1. 子类实例化时不能传参
+// 2. 父类属性如果是引用类型，会被所有子类共享
 function Person(name, age) {
   this.name = name;
   this.age = age;
@@ -18,7 +21,6 @@ Studnet.prototype.newFn = function () {
 
 // 原型继承：将子类的原型设置为父类的实例
 Studnet.prototype = new Person("zhangsan", 14);
-
 // 修正constructor指向
 Studnet.prototype.constructor = Studnet;
 var stu1 = new Studnet(1001);

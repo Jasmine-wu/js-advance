@@ -1,6 +1,5 @@
-
 // promise函数
-// - 传入一个函数，该函数支持两个参数：resolve, reject
+// - 传入一个函数，该函数接受两个参数：resolve, reject
 // - 有三个状态: pendding, fullfilled, rejected， 状态只能单向改变。
 // - 调用resolve会将promise的状态从pedding->fullfilled.调用reject会将promise的状态从pedding->rejected
 // - 调用resovle返回的结果用.then获取。调用rejecte结果.catch获取。
