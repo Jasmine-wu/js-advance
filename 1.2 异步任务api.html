@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 能开启一一个异步任务的api有哪些？
+
+      // 1. queueMicrotask ： IE11不支持
+
+      // console.log("1");
+      // queueMicrotask(() => {
+      //   console.log("2");
+      // });
+      // console.log("3");
+
+      // 2. MutationObserver
+
+      // 观察某个元素的
+      // console.log("1");
+      // const observer = new MutationObserver(() => {
+      //   console.log("2");
+      // });
+      // const div = document.createElement("div");
+      // observer.observe(div, { childList: true });
+      // div.innerHTML = "xxx";
+      // console.log("3");
+
+      // 3. setTimeout
+
+      // console.log("1");
+      // setTimeout(() => {
+      //   console.log("2");
+      // }, 1000);
+      // console.log("3");
+
+      // 4. setImmediate(IE支持)
+
+      // 5. Promise.then
+      // console.log("1");
+      // const p2 = new Promise((resolve, reject) => {
+      //   resolve(2);
+      // });
+      // p2.then((res) => {
+      //   console.log(res);
+      // });
+      // console.log("3");
+
+      //  需求：封装一个异步任务API，兼容各浏览器
+      function runAsyncTask(callback) {
+        if (typeof queueMicrotask === "function") {
+          queueMicrotask(callback);
+        } else if (typeof MutationObserver === "function") {
+          const observer = new MutationObserver(callback);
+          const div = document.createElement("div");
+          observer.observe(div, { childList: true });
+          div.innerText = "hello";
+        } else {
+          setTimeout(callback, 0);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -7,6 +7,18 @@
   </head>
   <body>
     <script>
+      function runAsyncTask(callback) {
+        if (typeof queueMicrotask === "function") {
+          queueMicrotask(callback);
+        } else if (typeof MutationObserver === "function") {
+          const observer = new MutationObserver(callback);
+          const div = document.createElement("div");
+          observer.observe(div, { childList: true });
+          div.innerText = "hello";
+        } else {
+          setTimeout(callback, 0);
+        }
+      }
       // 自定义Promise对象
       // Promise对象：获取异步操作结果的
       // 1. 传入一个回调函数，该回调函数接收两个参数(resolve,reject)
@@ -55,7 +67,9 @@
               this.result = result;
               // 异步操作：当状态改变时，执行成功的回调函数
               this.#onFullfilledCallBacks.forEach((onFullfilled) => {
-                onFullfilled(this.result);
+                runAsyncTask(() => {
+                  onFullfilled(this.result);
+                });
               });
             }
           };
@@ -65,7 +79,9 @@
               this.result = result;
               // 异步操作：当状态改变时，执行失败的回调函数
               this.#onRejectedCallBacks.forEach((onRejected) => {
-                onRejected(this.result);
+                runAsyncTask(() => {
+                  onRejected(this.result);
+                });
               });
             }
           };
@@ -88,10 +104,14 @@
 
           // 同步操作，直接执行
           if (this.state === FULLFILLED) {
-            onFullfilled(this.result);
+            runAsyncTask(() => {
+              onFullfilled(this.result);
+            });
           }
           if (this.state === REJECTED) {
-            onRejected(this.result);
+            runAsyncTask(() => {
+              onRejected(this.result);
+            });
           }
           // 异步操作：先保存成功/失败的回调函数
           if (this.state === PENDDING) {
@@ -137,13 +157,49 @@
 
       // 测试3， then方法支持获取异步操作结果
       // 需求分析：如果是异步操作，p2.then获取异步操作结果时，resolve(100)还未执行。也就是promise的状态还未改变，这时获取结果是失败的
-      // 解决：then时保存回调函数，等到resolve/reject方法被调用时再执行
+      // 解决：then时保存回调函数，等到resolve/reject方法被调用时再执行回调函数
+      // const p2 = new MyPromise((resolve, reject) => {
+      //   // 异步操作
+      //   setTimeout(() => {
+      //     // resolve(100);
+      //     reject("errorxxx");
+      //   }, 1000);
+      // });
+      // p2.then(
+      //   (res) => {
+      //     console.log(res);
+      //   },
+      //   (error) => {
+      //     console.log(error);
+      //   }
+      // );
+      // p2.then(
+      //   (res) => {
+      //     console.log("x", res);
+      //   },
+      //   (error) => {
+      //     console.log("x", error);
+      //   }
+      // );
+
+      // 分析： 原生Promise，执行顺序是top,bottom, 100
+      // 可见，原生Promise是将then方法的成功/失败的回调函数放到异步任务中执行的
+
+      // console.log("1");
+      // const p2 = new Promise((resolve, reject) => {
+      //   resolve(2);
+      // });
+      // p2.then((res) => {
+      //   console.log(res);
+      // });
+      // console.log("3");
+
+      console.log("1");
       const p2 = new MyPromise((resolve, reject) => {
-        // 异步操作
+        // resolve(2);
         setTimeout(() => {
-          // resolve(100);
-          reject("errorxxx");
-        }, 1000);
+          reject(2);
+        }, 0);
       });
       p2.then(
         (res) => {
@@ -153,15 +209,7 @@
           console.log(error);
         }
       );
-      p2.then(
-        (res) => {
-          console.log("x", res);
-        },
-        (error) => {
-          console.log("x", error);
-        }
-      );
-      // console.log("p2:", p2);
+      console.log("3");
     </script>
   </body>
 </html>
