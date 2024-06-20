@@ -19,6 +19,23 @@
           setTimeout(callback, 0);
         }
       }
+
+      function handleReturnValue(returnValue, p2, resovle, reject) {
+        // 如果返回值和then方法返回的promise是同一个
+        if (returnValue === p2) {
+          throw new TypeError("Chaining cycle detected for promise #<Promise>");
+        }
+        // 如果返回值是MyPromise实例
+        if (returnValue instanceof MyPromise) {
+          returnValue.then(
+            (res) => resovle(res),
+            (error) => reject(error)
+          );
+        } else {
+          // 如果不是MyPromise实例
+          resovle(returnValue);
+        }
+      }
       // 自定义Promise对象
       // Promise对象：获取异步操作结果的
       // 1. 传入一个回调函数，该回调函数接收两个参数(resolve,reject)
@@ -111,8 +128,8 @@
                 try {
                   const returnValue = onFullfilled(this.result);
 
+                  // 如果返回值跟then方法返回promise是同一个
                   if (returnValue === p2) {
-                    console.log("是同一个promise");
                     throw new TypeError(
                       "Chaining cycle detected for promise #<Promise>"
                     );
@@ -134,7 +151,14 @@
             }
             if (this.state === REJECTED) {
               runAsyncTask(() => {
-                onRejected(this.result);
+                // 处理抛出的异常
+                try {
+                  const returnValue = onRejected(this.result);
+                  // 处理返回值
+                  handleReturnValue(returnValue, p2, resovle, reject);
+                } catch (error) {
+                  reject(error);
+                }
               });
             }
             // 异步操作：先保存成功/失败的回调函数
@@ -300,24 +324,58 @@
       //   return p;
       // });
 
-      const p = new MyPromise((resolve, reject) => {
-        resolve(1);
-        // reject(2);
-      });
+      // const p = new MyPromise((resolve, reject) => {
+      //   resolve(1);
+      //   // reject(2);
+      // });
 
+      // const p2 = p.then(
+      //   (res) => {
+      //     console.log("p1 res:", res);
+      //     return p2;
+      //   },
+      //   (error) => {
+      //     console.log("p1 error:", error);
+      //   }
+      // );
+      // p2.then(
+      //   () => {},
+      //   (err) => {
+      //     console.log(err);
+      //   }
+      // );
+
+      // 测试8: then方法支持链式调用,处理失败的回调函数onRejected
+      // 处理onRejected函数内抛出的异常
+      // - 处理onRejected函数返回值
+      // -- 返回值是普通值
+      // -- 返回值是Promise对象
+      // -- 返回值跟then方法返回值是同一个实例的问题
+
+      const p = new MyPromise((resolve, reject) => {
+        reject(2);
+      });
       const p2 = p.then(
         (res) => {
           console.log("p1 res:", res);
-          return p2;
         },
         (error) => {
-          console.log("p1 error:", error);
+          // throw "xxxxx";
+          return 1;
+          // return new MyPromise((resovle, reject) => {
+          //   // reject(22);
+          //   resovle(11);
+          // });
+          // return p2;
+          // console.log("p1 error:", error);
         }
       );
       p2.then(
-        () => {},
-        (err) => {
-          console.log(err);
+        (res) => {
+          console.log("p2 res", res);
+        },
+        (error) => {
+          console.log("p2 error", error);
         }
       );
     </script>
