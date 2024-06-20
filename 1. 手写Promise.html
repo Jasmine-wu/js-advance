@@ -16,17 +16,17 @@
       // 3. 实例方法：then/catch
       // 3.1 通过调用.then方法resovle函数返回成功结果
 
-      const p1 = new Promise((resovle, reject) => {
-        setTimeout(() => {
-          resovle("100");
-        }, 1000);
-      });
-      p1.then((value) => {
-        console.log("success:", value);
-      }).catch((resson) => {
-        console.log("fail:", resson);
-      });
-      console.log("p1:", p1);
+      // const p1 = new Promise((resovle, reject) => {
+      //   setTimeout(() => {
+      //     resovle("100");
+      //   }, 1000);
+      // });
+      // p1.then((value) => {
+      //   console.log("success:", value);
+      // }).catch((resson) => {
+      //   console.log("fail:", resson);
+      // });
+      // console.log("p1:", p1);
 
       // 状态变量
       // option + 双击选中三个变量名
@@ -36,17 +36,16 @@
       const REJECTED = "rejected";
       class MyPromise {
         // 状态
-        #state = PENDDING;
+        state = PENDDING;
         // 结果
-        #result = undefined;
-
+        result = undefined;
         // 传入回调函数
         constructor(excutorFn) {
           // 1. 两个内函数(这里是箭头函数)
           // 箭头函数内部的this指向箭头函数定义所在上下文的this
           // 也就是 this指向的Promise 实例
           const resovle = (result) => {
-            // state是不可逆的
+            // 1.1 state是不可逆的
             if (this.state === PENDDING) {
               this.state = FULLFILLED;
               this.result = result;
@@ -59,22 +58,68 @@
             }
           };
 
-          // 2.执行回调函数
+          // 执行回调函数
           excutorFn(resovle, reject);
         }
-        //
+
+        // 2. 实例方法then方法
+        // .then((res,error)=>{})
+        then(onFullfilled, onRejected) {
+          console.log(this);
+          onFullfilled =
+            typeof onFullfilled === "function" ? onFullfilled : (x) => x;
+          onRejected =
+            typeof onRejected === "function"
+              ? onRejected
+              : (x) => {
+                  throw x;
+                };
+
+          // 执行
+          if (this.state === FULLFILLED) {
+            onFullfilled(this.result);
+          }
+          if (this.state === REJECTED) {
+            onRejected(this.result);
+          }
+        }
       }
 
       // 测试1: 状态是不可逆的，只能从pedding->resolved 或者peddding->rejected
+      // 不能从 resolved=>rejected rejected=>resolved
+
+      // const p2 = new MyPromise((resolve, reject) => {
+      //   // 目前还不支持获取异步操作结果：state，result不会更新
+      //   // setTimeout(() => {
+      //   //   resolve("100");
+      //   //   // reject("1000");
+      //   // }, 1000);
+      //       resolve("100");
+      //     // reject("1000");
+      // });
+
+      // 测试2: 实例方法then，
       const p2 = new MyPromise((resolve, reject) => {
-        setTimeout(() => {
-          // 测试1: 状态是不可逆的，只能从pedding->resolved 或者peddding->rejected
-          // 不能从 resolved=>rejected rejected=>resolved
-          resolve("100");
-          // reject("1000");
-        }, 1000);
+        // 同步操作
+        resolve(100);
+        // reject("errorxxx");
       });
-      console.log("state:", p2);
+      // 获取同步操作结果，支持接收两个参数
+      // p2.then(
+      //   (res) => {
+      //     console.log(res);
+      //   },
+      //   (error) => {
+      //     console.log(error);
+      //   }
+      // );
+
+      // 测试： 调用reject，但是then只接收一个参数时。报错：Uncaught errorxxx
+      // 解决：
+      p2.then((res) => {
+        console.log(res);
+      });
+      console.log("p2:", p2);
     </script>
   </body>
 </html>
