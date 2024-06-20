@@ -103,13 +103,20 @@
                 };
 
           // 返回Promise，支持链式调用
-          return new MyPromise((resovle, reject) => {
+          const p2 = new MyPromise((resovle, reject) => {
             // 同步操作，直接执行
             if (this.state === FULLFILLED) {
               runAsyncTask(() => {
                 // 处理onFullfilled返回值以及抛出的异常
                 try {
                   const returnValue = onFullfilled(this.result);
+
+                  if (returnValue === p2) {
+                    console.log("是同一个promise");
+                    throw new TypeError(
+                      "Chaining cycle detected for promise #<Promise>"
+                    );
+                  }
                   // 如果返回值是MyPromise实例
                   if (returnValue instanceof MyPromise) {
                     returnValue.then(
@@ -136,6 +143,8 @@
               this.#onRejectedCallBacks.push(onRejected);
             }
           });
+
+          return p2;
         }
       }
 
@@ -257,26 +266,58 @@
       // );
 
       // 测试6：then方法支持链式调用，onFullfilled方法支持返回Promise
-      const p2 = new MyPromise((resolve, reject) => {
+      // const p2 = new MyPromise((resolve, reject) => {
+      //   resolve(1);
+      //   // reject(2);
+      // });
+      // p2.then(
+      //   (res) => {
+      //     console.log("p1 res:", res);
+      //     return new MyPromise((resovle, reject) => {
+      //       reject(22);
+      //     });
+      //   },
+      //   (error) => {
+      //     console.log("p1 error:", error);
+      //   }
+      // ).then(
+      //   (res) => {
+      //     console.log("p2 res", res);
+      //   },
+      //   (error) => {
+      //     console.log("p2 error", error);
+      //   }
+      // );
+
+      // 测试7：then方法支持链式调用,如果onFullfilled回调函数返回的MyPromise实例和then方法返回的MyPromise实例是同一个时，支持抛出TypeError
+      // 分析：原生Promise，then方法onFullfilled回调函数返回的Promise实例和then方法返回的Promise实例是同一个时
+      // 会抛出TypeError：Uncaught (in promise) TypeError: Chaining cycle detected for promise #<Promise>
+
+      // const p = new Promise((resovle, reject) => {
+      //   resovle("xxx");
+      // }).then((res) => {
+      //   console.log("p:", res);
+      //   return p;
+      // });
+
+      const p = new MyPromise((resolve, reject) => {
         resolve(1);
         // reject(2);
       });
-      p2.then(
+
+      const p2 = p.then(
         (res) => {
           console.log("p1 res:", res);
-          return new MyPromise((resovle, reject) => {
-            reject(22);
-          });
+          return p2;
         },
         (error) => {
           console.log("p1 error:", error);
         }
-      ).then(
-        (res) => {
-          console.log("p2 res", res);
-        },
-        (error) => {
-          console.log("p2 error", error);
+      );
+      p2.then(
+        () => {},
+        (err) => {
+          console.log(err);
         }
       );
     </script>
