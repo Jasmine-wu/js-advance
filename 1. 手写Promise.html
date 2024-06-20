@@ -103,7 +103,12 @@
           };
 
           // 执行回调函数
-          excutorFn(resovle, reject);
+          try {
+            // 捕获excutorFn函数内抛出的异常
+            excutorFn(resovle, reject);
+          } catch (error) {
+            reject(error);
+          }
         }
 
         // 2. 实例方法then方法
@@ -194,6 +199,11 @@
           });
 
           return p2;
+        }
+
+        // 3. 实例方法catch
+        catch(onRejected) {
+          return this.then(undefined, onRejected);
         }
       }
 
@@ -404,45 +414,60 @@
       //   }
       // );
 
-      // 测试9:then方法支持链式调用, 处理获取异步操作结果时,onFullfilled方法和onRejected回调函数抛出的异常和返回值
+      // 测试9: then方法支持链式调用, 处理获取异步操作结果时,onFullfilled方法和onRejected回调函数抛出的异常和返回值
+      // const p = new MyPromise((resovle, reject) => {
+      //   // 异步操作
+      //   setTimeout(() => {
+      //     // resovle(1);
+      //     reject(1);
+      //   }, 0);
+      // });
+      // const p2 = p.then(
+      //   (res) => {
+      //     console.log("p1 res:", res);
+      //     // throw "xxxxx";
+      //     // return 2;
+      //     // return new MyPromise((resovle, reject) => {
+      //     //   // reject(22);
+      //     //   resovle(11);
+      //     // });
+      //     // return p2;
+      //   },
+      //   (error) => {
+      //     console.log("p1 error:", error);
+
+      //     // throw "xxxxx";
+      //     // return 2;
+      //     // return new MyPromise((resovle, reject) => {
+      //     //   // reject(22);
+      //     //   resovle(11);
+      //     // });
+      //     // return p2;
+      //   }
+      // );
+      // p2.then(
+      //   (res) => {
+      //     console.log("p2 res", res);
+      //   },
+      //   (error) => {
+      //     console.log("p2 error", error);
+      //   }
+      // );
+
+      // 测试10:  实例方法catch
       const p = new MyPromise((resovle, reject) => {
         // 异步操作
-        setTimeout(() => {
-          // resovle(1);
-          reject(1);
-        }, 0);
-      });
-      const p2 = p.then(
-        (res) => {
-          console.log("p1 res:", res);
-          // throw "xxxxx";
-          // return 2;
-          // return new MyPromise((resovle, reject) => {
-          //   // reject(22);
-          //   resovle(11);
-          // });
-          // return p2;
-        },
-        (error) => {
-          console.log("p1 error:", error);
 
-          // throw "xxxxx";
-          // return 2;
-          // return new MyPromise((resovle, reject) => {
-          //   // reject(22);
-          //   resovle(11);
-          // });
-          return p2;
-        }
-      );
-      p2.then(
-        (res) => {
-          console.log("p2 res", res);
-        },
-        (error) => {
-          console.log("p2 error", error);
-        }
-      );
+        // 1.
+        // reject(1);
+        // 2.
+        throw "dddd";
+      });
+      p.then((res) => {
+        console.log("p1 res:", res);
+      }).catch((err) => {
+        console.log("catch err:", err);
+      });
     </script>
   </body>
 </html>
