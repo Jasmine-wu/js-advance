@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <!-- 引入mockjs -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/Mock.js/1.0.0/mock.js"></script>
+    <script>
+      let myData = Mock.mock({
+        "data|3-5": [
+          {
+            "id|+1": 1,
+            name: "@cname",
+            "goods|0-10": [
+              {
+                "id|+1": 10,
+                gname: "@cname",
+                "goods|0-5": [
+                  {
+                    "id|+1": 100,
+                    gname: "@cname",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      console.log(myData);
+
+      // var data = [
+      //   {
+      //     id: 1,
+      //     name: "家电",
+      //     goods: [
+      //       {
+      //         id: 11,
+      //         gname: "冰箱",
+      //         goods: [
+      //           {
+      //             id: 111,
+      //             gname: "海尔",
+      //           },
+      //           {
+      //             id: 112,
+      //             gname: "美的",
+      //           },
+      //         ],
+      //       },
+      //       {
+      //         id: 12,
+      //         gname: "洗衣机",
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     id: 2,
+      //     name: "服饰",
+      //   },
+      // ];
+
+      function getID(jsonData, id) {
+        for (let i = 0; i < jsonData.length; i++) {
+          const good = jsonData[i];
+          if (good.id === id) {
+            return good;
+          } else if (good.goods && good.goods.length >= 0) {
+            const result = getID(good.goods, id);
+            if (result) return result;
+          }
+        }
+      }
+
+      const data = myData.data;
+
+      console.log(getID(data, 1));
+      console.log(getID(data, 2));
+      console.log(getID(data, 11));
+      console.log(getID(data, 12));
+      console.log(getID(data, 111));
+    </script>
+  </body>
+</html>

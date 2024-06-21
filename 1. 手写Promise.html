@@ -205,6 +205,11 @@
         catch(onRejected) {
           return this.then(undefined, onRejected);
         }
+        // 4. 实例方法finally
+        finally(onFinally) {
+          return this.then(onFinally, onFinally);
+        }
+        //
       }
 
       // 测试1: 状态是不可逆的，只能从pedding->resolved 或者peddding->rejected
@@ -454,7 +459,7 @@
       //   }
       // );
 
-      // 测试10:  实例方法catch
+      // 测试10:  实例方法catch/finally
       const p = new MyPromise((resovle, reject) => {
         // 异步操作
 
@@ -465,9 +470,14 @@
       });
       p.then((res) => {
         console.log("p1 res:", res);
-      }).catch((err) => {
-        console.log("catch err:", err);
-      });
+      })
+        .catch((err) => {
+          console.log("catch err:", err);
+        })
+        .finally(() => {
+          // 不论成功或者失败都会调用，不需要参数
+          console.log("finally");
+        });
     </script>
   </body>
 </html>
